@@ -1,5 +1,78 @@
 # Changelog
 
+## v1.0.0 - Producción y documentación
+
+### Añadido
+- Documentación OpenAPI/Swagger completa
+- Swagger UI disponible en /api-docs
+- Dockerfile optimizado con multi-stage build
+- docker-compose.prod.yml para deployment
+- .dockerignore para builds eficientes
+- env.production.example con variables para producción
+- Health checks en Docker Compose
+- Restart policy para contenedores
+
+### Documentación Swagger
+- Especificación OpenAPI 3.0.0
+- Todos los endpoints documentados
+- Schemas de request/response
+- Autenticación JWT configurada
+- Tags para organización
+- Ejemplos de uso
+
+### Docker
+- **Dockerfile multi-stage**:
+  - Stage 1 (builder): Instalación y compilación
+  - Stage 2 (production): Imagen optimizada
+- **Imagen base**: node:20-alpine
+- **Usuario no-root**: Ejecución como usuario `node`
+- **dumb-init**: Manejo correcto de señales
+- **Prisma client**: Incluido en imagen final
+
+### Docker Compose Producción
+- Servicio PostgreSQL 16 con health checks
+- Servicio API con restart automático
+- Network privada para servicios
+- Volúmenes persistentes
+- Variables de entorno configurables
+- Dependencias entre servicios
+
+### Archivos creados
+- `src/config/swagger.ts` - Configuración OpenAPI
+- `Dockerfile` - Imagen Docker optimizada
+- `.dockerignore` - Exclusiones de build
+- `docker-compose.prod.yml` - Orquestación producción
+- `env.production.example` - Variables de entorno
+
+### Archivos modificados
+- `src/app.ts` - Integración Swagger UI
+- `package.json` - Nuevas dependencias
+
+### Dependencias nuevas
+- `swagger-ui-express` - UI para documentación
+- `swagger-jsdoc` - Generación de spec OpenAPI
+- `@types/swagger-ui-express` - Tipos TypeScript
+- `@types/swagger-jsdoc` - Tipos TypeScript
+
+### Endpoints
+- `GET /api-docs` - Documentación Swagger UI interactiva
+- `GET /health` - Health check (sin auth)
+
+### Deployment Docker
+```bash
+docker build -t api-express .
+docker-compose -f docker-compose.prod.yml up -d
+```
+
+### Seguridad en producción
+- NODE_ENV=production
+- Helmet con CSP deshabilitado solo para Swagger
+- Secrets via variables de entorno
+- Usuario no-root en contenedor
+- Health checks para disponibilidad
+
+---
+
 ## v0.9.0 - Testing con Jest y Supertest
 
 ### Añadido
