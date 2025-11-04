@@ -8,4 +8,8 @@ coverage/
 .idea/
 *.swp
 *.swo
+.env.test
+.env.production
 
+
+/src/generated/prisma
