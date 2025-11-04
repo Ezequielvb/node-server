@@ -1,5 +1,38 @@
 # Changelog
 
+## v0.4.0 - Validación con Zod
+
+### Añadido
+- Middleware genérico de validación con Zod
+- Esquemas de validación para users (register, login, update)
+- Types de TypeScript generados desde esquemas Zod
+- CRUD completo de usuarios con validación
+- Controladores de users con manejo de errores de Prisma
+- Rutas de users: GET, PATCH, DELETE
+- Documentación de ejemplos de API
+
+### Endpoints nuevos
+- `GET /api/users` - Listar usuarios
+- `GET /api/users/:id` - Obtener usuario por ID
+- `PATCH /api/users/:id` - Actualizar usuario (con validación)
+- `DELETE /api/users/:id` - Eliminar usuario
+
+### Validación implementada
+- Email válido
+- Nombre mínimo 2 caracteres
+- Password mínimo 8 caracteres
+- Mensajes de error en español
+
+### Archivos principales
+- `src/middleware/validate.ts` - Middleware genérico
+- `src/modules/users/users.schema.ts` - Esquemas Zod
+- `src/modules/users/users.service.ts` - Lógica de negocio
+- `src/modules/users/users.controller.ts` - Controladores
+- `src/modules/users/users.routes.ts` - Rutas
+- `docs/API_EXAMPLES.md` - Ejemplos de uso
+
+---
+
 ## v0.3.0 - PostgreSQL + Docker con Prisma
 
 ### Añadido
