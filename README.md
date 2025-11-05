@@ -19,6 +19,7 @@ Este proyecto implementa una API REST con Node.js, Express y PostgreSQL siguiend
   - [v0.9.0 - Testing](#v090---testing-con-jest-y-supertest)
   - [v1.0.0 - Producción](#v100---producción-y-documentación)
   - [v1.0.1 - Fix Swagger](#v101---fix-documentación-swagger-completa)
+  - [v1.0.2 - Fix tsx](#v102---fix-tsx-para-es-modules-en-desarrollo)
 
 ---
 
@@ -3444,6 +3445,90 @@ docker-compose -f docker-compose.prod.yml up -d api
 - Schemas reutilizables definidos
 - Security schemes (JWT) configurados
 - Listo para probar la API desde el navegador
+
+---
+
+## v1.0.2 - Fix: tsx para ES Modules en desarrollo
+
+**Objetivo:** Solucionar el error de `ts-node` al ejecutar `npm run dev` con ES Modules e imports con extensión `.js`.
+
+### Problema detectado
+
+Al ejecutar `npm run dev`, `ts-node` fallaba con:
+
+```
+Error: Cannot find module '/path/to/src/app.js' imported from /path/to/src/index.ts
+```
+
+**Causa:** `ts-node` tiene soporte limitado para ES Modules cuando se usan imports con extensión `.js` (que es el estándar correcto para TypeScript con `"type": "module"`).
+
+### ¿Por qué usamos `.js` en imports TypeScript?
+
+Cuando usas ES Modules (`"type": "module"` en `package.json`), TypeScript **requiere** que uses extensiones `.js` en los imports, incluso para archivos `.ts`:
+
+```typescript
+import { errorHandler } from './middleware/error.js';
+```
+
+**Razón:** TypeScript no reescribe rutas de importación durante la compilación. Si escribes `.ts`, funcionaría en desarrollo pero fallaría en producción porque Node.js buscaría archivos `.ts` en `dist/`.
+
+**Documentación oficial:** [TypeScript Handbook - ES Modules with Node.js](https://www.typescriptlang.org/docs/handbook/esm-node.html)
+
+> *"In TypeScript files, use `.js` extensions in imports"*
+
+### Solución: Usar `tsx` en lugar de `ts-node`
+
+`tsx` es un ejecutor TypeScript moderno que soporta ES Modules nativamente.
+
+#### Cambios realizados
+
+**1. Instalar `tsx`:**
+
+```bash
+npm install --save-dev tsx
+```
+
+**2. Actualizar `nodemon.json`:**
+
+```json
+{
+  "watch": ["src"],
+  "ext": "ts",
+  "exec": "tsx src/index.ts"
+}
+```
+
+Cambio: `"exec": "ts-node src/index.ts"` → `"exec": "tsx src/index.ts"`
+
+### Verificación
+
+```bash
+npm run dev
+```
+
+Ahora el servidor arranca correctamente sin errores:
+
+```
+info: API escuchando en http://localhost:3000
+info: Entorno: development
+```
+
+### Comparación: ts-node vs tsx
+
+| Característica | ts-node | tsx |
+|----------------|---------|-----|
+| ES Modules | ⚠️ Requiere configuración compleja | ✅ Soporte nativo |
+| Imports `.js` | ❌ Falla sin config especial | ✅ Funciona out-of-the-box |
+| Velocidad | Más lento | Más rápido (usa esbuild) |
+| Configuración | Compleja para ESM | Mínima |
+
+### Resumen
+
+✅ **`npm run dev` funciona correctamente**
+- `tsx` reemplaza a `ts-node` para mejor soporte de ES Modules
+- Los imports `.js` son el estándar correcto para TypeScript + ES Modules
+- No requiere configuración adicional
+- Más rápido en desarrollo
 
 ---
 
