@@ -20,3 +20,15 @@ model User {
   passwordHash String
   createdAt    DateTime @default(now())
 }
+
+model Profile {
+  id        Int      @id @default(autoincrement())
+  bio       String?
+  phone     String?
+  address   String?
+  // Otros campos de perfil
+  
+  // Enlace 1:1 con User
+  userId    Int      @unique // El ID de usuario es la clave única
+  user      User     @relation(fields: [userId], references: [id])
+}
